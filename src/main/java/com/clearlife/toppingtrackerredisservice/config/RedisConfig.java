@@ -13,8 +13,19 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 public class RedisConfig {
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
+        String redisServerHost = System.getenv("REDIS_SERVER_HOST");
+        if (redisServerHost == null || redisServerHost.isEmpty()) {
+            redisServerHost = "redis-server"; // Default value
+        }
+
+        String redisServerPortStr = System.getenv("REDIS_SERVER_PORT");
+        int redisServerPort = 6379; // Default value
+        if (redisServerPortStr != null && !redisServerPortStr.isEmpty()) {
+            redisServerPort = Integer.parseInt(redisServerPortStr);
+        }
+
         RedisStandaloneConfiguration redisStandaloneConfiguration =
-                new RedisStandaloneConfiguration("redis-server", 6379);
+                new RedisStandaloneConfiguration(redisServerHost, redisServerPort);
         return new LettuceConnectionFactory(redisStandaloneConfiguration);
     }
 
